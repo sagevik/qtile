@@ -1,0 +1,14 @@
+- [x] swaylock sleep
+- [x] topbar missing on unlock (force refresh?)
+- [x] audio output issue
+- [x] tlp (replace auto-cpufreq)
+- [ ] Bluetooth
+- [ ] WWAN (in WiFi Menu?)
+- [ ] dunst notification styling
+- [ ] refactor/reorganise python code
+- [ ] save current brightness & restore
+- [ ] theme notifications
+- [ ] rofi audio output menu / input menu
+- [ ] screen/audio input capture rofi menu
+- [ ] show recording icon
+- [ ] screen key for tutorial

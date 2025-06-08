@@ -1,7 +1,34 @@
+import subprocess
+import re
 from libqtile import bar, widget
 
-
 from .constants import Colours, FONT_TYPE
+
+
+def get_audio_output_device():
+    sink = subprocess.run(
+        ["pactl", "get-default-sink"], capture_output=True, text=True
+    ).stdout.strip()
+
+    sinks_out = subprocess.run(
+        ["pactl", "list", "sinks"], capture_output=True, text=True
+    ).stdout
+
+    # Isolate the block for the current sink
+    match = re.search(rf"(?s)Name: {re.escape(sink)}\n(.*?)(?=\nName:|\Z)", sinks_out)
+    if not match:
+        return "Audio: Unknown"
+
+    block = match.group(1)
+
+    port_match = re.search(r"Active Port:\s*(\S+)", block)
+    if not port_match:
+        return "Audio: Unknown"
+
+    port = port_match.group(1)
+    pretty = port.replace("analog-output-", "").replace("-", " ").title()
+
+    return pretty
 
 
 top_bar = bar.Bar(
@@ -84,7 +111,7 @@ top_bar = bar.Bar(
             format="{essid} [{percent:2.0%}]",
             font=FONT_TYPE,
             fontsize=13,
-            interface="wlp0s20f3",
+            interface="wlp3s0",
             background=Colours.VERY_DARK_BLUE,
         ),
         widget.Image(
@@ -152,11 +179,29 @@ top_bar = bar.Bar(
             background=Colours.DARK_BLUE,
         ),
         widget.BatteryIcon(
+            battery="BAT0",
             theme_path="~/.config/qtile/assets/graphics/battery_theme/",
             background=Colours.DARK_BLUE,
             scale=1,
         ),
         widget.Battery(
+            battery="BAT0",
+            font=FONT_TYPE,
+            background=Colours.DARK_BLUE,
+            foreground=Colours.WHITE,
+            format="{percent:2.0%}",
+            fontsize=13,
+            low_foreground=Colours.WARNING,
+            low_percentage=0.2,
+        ),
+        widget.BatteryIcon(
+            battery="BAT1",
+            theme_path="~/.config/qtile/assets/graphics/battery_theme/",
+            background=Colours.DARK_BLUE,
+            scale=1,
+        ),
+        widget.Battery(
+            battery="BAT1",
             font=FONT_TYPE,
             background=Colours.DARK_BLUE,
             foreground=Colours.WHITE,
@@ -171,16 +216,19 @@ top_bar = bar.Bar(
         ),
         widget.Volume(
             font=FONT_TYPE,
-            theme_path="~/.config/qtile/assets/graphics/volume_theme/",
-            emoji=True,
-            fontsize=13,
             background=Colours.DARK_BLUE,
+            foreground=Colours.WHITE,
+            fontsize=18,
+            emoji=True,
+            padding=10,
         ),
         widget.Spacer(
             length=-5,
             background=Colours.DARK_BLUE,
         ),
-        widget.Volume(
+        widget.GenPollText(
+            update_interval=2,
+            func=get_audio_output_device,
             font=FONT_TYPE,
             background=Colours.DARK_BLUE,
             foreground=Colours.WHITE,
@@ -201,7 +249,7 @@ top_bar = bar.Bar(
             background=Colours.ELECTRIC_BLUE,
         ),
     ],
-    32,
+    size=32,
     border_width=[0, 0, 0, 0],
     margin=[10, 10, 0, 10],
 )

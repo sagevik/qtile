@@ -6,6 +6,7 @@ from typing import List
 
 shutdown_icon = ""
 reboot_icon = ""
+sleep_icon = "󰤄"
 lock_icon = ""
 logout_icon = "󰗽"
 yes_icon = ""
@@ -20,7 +21,13 @@ def get_uptime() -> str:
 
 
 def main_menu() -> str:
-    options: List[str] = [lock_icon, logout_icon, shutdown_icon, reboot_icon]
+    options: List[str] = [
+        lock_icon,
+        logout_icon,
+        sleep_icon,
+        shutdown_icon,
+        reboot_icon,
+    ]
     menu: str = "\n".join([f"{item}" for item in options])
     uptime = get_uptime()
     result = subprocess.run(
@@ -64,21 +71,32 @@ def confirm() -> bool:
     return result == yes_icon
 
 
+def lock_qtile():
+    subprocess.Popen(["swaylock", "-i", "~/Pictures/Wallpapers/austria.jpg", "--clock"])
+
+
+def sleep():
+    script_path = os.path.expanduser("~/.config/qtile/scripts/sleep.sh")
+    subprocess.Popen([script_path])
+
+
 def power():
     selected = main_menu()
 
-    action_map = {
-        shutdown_icon: ["systemctl", "shutdown"],
-        reboot_icon: ["systemctl", "reboot"],
-        lock_icon: ["dm-tool", "lock"],
-        logout_icon: ["systemctl","logout"],
-    }
+    if selected == lock_icon:
+        lock_qtile()
+    elif selected == sleep_icon:
+        sleep()
+    else:
+        action_map = {
+            shutdown_icon: ["systemctl", "poweroff"],
+            reboot_icon: ["systemctl", "reboot"],
+            logout_icon: ["pkill", "-KILL", "-u", os.environ["USER"]],
+        }
 
-    if action := action_map[selected]:
-        if len(action) == 2 and [1] == "lock":
-            subprocess.run(action)
-        elif confirm():
-            subprocess.run(action)
+        if action := action_map[selected]:
+            if confirm():
+                subprocess.run(action)
 
 
 if __name__ == "__main__":

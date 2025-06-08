@@ -1,23 +1,24 @@
-from libqtile import qtile, hook
+from libqtile import hook, qtile
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
-from libqtile.lazy import lazy
-from libqtile.layout.xmonad import MonadTall
-from libqtile.layout.max import Max
 from libqtile.layout.floating import Floating
+from libqtile.layout.max import Max
+from libqtile.layout.xmonad import MonadTall
+from libqtile.lazy import lazy
 
 
-from settings.top_bar import top_bar
-from settings.commands import (
-    Brightness,
-    Microphone,
-    power_menu,
-    wifi_menu,
-    bluetooth_menu,
-    autostart,
-    setup_mouse,
-    setup_display,
+from controls.audio import (
+    lower_volume,
+    raise_volume,
+    toggle_mute_audio_output,
+    toggle_mute_audio_input,
 )
-from settings.constants import Colours, WALLPAPER_HONG_KONG, FONT_TYPE
+from controls.screen import decrease_brightness, increase_brightness
+from controls.menus import autostart, bluetooth_menu, power_menu, wifi_menu
+
+from settings.constants import Colours, FONT_TYPE, WALLPAPER_HONG_KONG
+from settings.top_bar import top_bar
+
+from scripts.battery_notification import notify_all_batteries
 
 SCRIPTS_PATH = "~/.config/qtile/scripts"
 
@@ -28,14 +29,6 @@ terminal = "alacritty"
 @hook.subscribe.startup_once
 def on_startup():
     autostart()
-    setup_display()
-    setup_mouse()
-
-
-@hook.subscribe.screen_change
-def on_screenshange():
-    setup_display()
-    setup_mouse()
 
 
 keys = [
@@ -44,44 +37,56 @@ keys = [
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-    Key([mod], "space", lazy.layout.next(), desc="Move window focus to other window"),
-    Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
+    Key([mod], "Return", lazy.layout.next(), desc="Move window focus to other window"),
+    Key(
+        [mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"
+    ),
+    Key(
+        [mod, "shift"],
+        "l",
+        lazy.layout.shuffle_right(),
+        desc="Move window to the right",
+    ),
     Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
-    Key([mod], "i", lazy.layout.grow()),
-    Key([mod], "m", lazy.layout.shrink()),
-    Key([mod], "n", lazy.layout.reset()),
+    Key([mod], "m", lazy.layout.grow()),
+    Key([mod], "s", lazy.layout.shrink()),
+    Key([mod], "u", lazy.layout.reset()),
     Key([mod, "shift"], "n", lazy.layout.normalize()),
     Key([mod], "o", lazy.layout.maximize()),
-    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod], "t", lazy.spawn(terminal), desc="Launch terminal"),
     Key([mod], "d", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "Tab", lazy.next_screen()),
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
     Key([mod], "Escape", power_menu, desc="power menu"),
-    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="Toggle fullscreen on focused window"),
-    Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle floating on focused window"),
+    Key(
+        [mod],
+        "z",
+        lazy.window.toggle_fullscreen(),
+        desc="Toggle fullscreen on focused window",
+    ),
+    Key(
+        [mod],
+        "f",
+        lazy.window.toggle_floating(),
+        desc="Toggle floating on focused window",
+    ),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawn("rofi -show drun"), desc="Spawn rofi apps"),
+    Key([mod], "space", lazy.spawn("rofi -show drun"), desc="Spawn rofi apps"),
     Key([mod], "w", lazy.spawn("rofi -show window"), desc="Spawn rofi"),
     Key([mod], "n", wifi_menu, desc="Spawn rofi WiFi menu"),
     Key([mod], "b", bluetooth_menu, desc="Spawn rofi bluetooth menu"),
-    # messaging key
-    Key([], "XF86Messenger", lazy.spawn("kotatogram-desktop")),
-    # favourites key
-    Key([], "XF86Favorites", lazy.spawn("firefox")),
-    # bluetooth/phone keys
+    Key([mod, "shift"], "i", notify_all_batteries, desc="show battery info"),
+    Key([], "XF86Messenger", lazy.spawn("telegram-desktop")),
+    Key([], "XF86Favorites", lazy.spawn("brave")),
     Key([], "XF86Go", lazy.spawn("rfkill unblock bluetooth")),
     Key([], "Cancel", lazy.spawn("rfkill block bluetooth")),
-    # volume
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer sset Master 5%+")),
-    Key([], "XF86AudioMute", lazy.spawn("amixer sset Master toggle")),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("amixer sset Master 5%-")),
-    Key([], "XF86MonBrightnessDown", lazy.spawn(Brightness.decrease_brightness_cmd())),
-    Key([], "XF86MonBrightnessUp", lazy.spawn(Brightness.increase_brightness_cmd())),
-    # mute microphone
-    Key([], "XF86AudioMicMute", lazy.spawn(Microphone.toggle_microphone_mute_cmd())),
+    Key([], "XF86AudioRaiseVolume", raise_volume),
+    Key([], "XF86AudioMute", toggle_mute_audio_output),
+    Key([], "XF86AudioLowerVolume", lower_volume),
+    Key([], "XF86MonBrightnessDown", decrease_brightness),
+    Key([], "XF86MonBrightnessUp", increase_brightness),
+    Key([], "XF86AudioMicMute", toggle_mute_audio_input),
 ]
 
 # Add key bindings to switch VTs in Wayland.
@@ -170,7 +175,9 @@ mouse = [
         lazy.window.set_position_floating(),
         start=lazy.window.get_position(),
     ),
-    Drag([mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()),
+    Drag(
+        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
+    ),
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
