@@ -13,12 +13,16 @@ from controls.audio import (
     toggle_mute_audio_input,
 )
 from controls.screen import decrease_brightness, increase_brightness
-from controls.menus import autostart, bluetooth_menu, power_menu, wifi_menu
+from controls.menus import (
+    autostart,
+    bluetooth_menu,
+    power_menu,
+    wifi_menu,
+    recorder_menu,
+)
 
 from settings.constants import Colours, FONT_TYPE, WALLPAPER_HONG_KONG
 from settings.top_bar import top_bar
-
-from scripts.battery_notification import notify_all_batteries
 
 SCRIPTS_PATH = "~/.config/qtile/scripts"
 
@@ -73,11 +77,11 @@ keys = [
     ),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod], "space", lazy.spawn("rofi -show drun"), desc="Spawn rofi apps"),
-    Key([mod], "w", lazy.spawn("rofi -show window"), desc="Spawn rofi"),
+    Key([mod], "w", lazy.spawn("rofi -show window -show-icons"), desc="Spawn rofi"),
     Key([mod], "n", wifi_menu, desc="Spawn rofi WiFi menu"),
+    Key([mod], "r", recorder_menu, desc="Spawn rofi recorder menu"),
     Key([mod], "b", bluetooth_menu, desc="Spawn rofi bluetooth menu"),
-    Key([mod, "shift"], "i", notify_all_batteries, desc="show battery info"),
-    Key([], "XF86Messenger", lazy.spawn("telegram-desktop")),
+    Key([], "XF86Keyboard", lazy.spawn("ferdium")),
     Key([], "XF86Favorites", lazy.spawn("brave")),
     Key([], "XF86Go", lazy.spawn("rfkill unblock bluetooth")),
     Key([], "Cancel", lazy.spawn("rfkill block bluetooth")),

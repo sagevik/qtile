@@ -15,6 +15,6 @@ BRIGHTNESS_FILE="/tmp/prev_brightness"
 swayidle -w \
     timeout $dim_timeout "brillo -G > $BRIGHTNESS_FILE && brillo -S 10" \
     resume "[ -f $BRIGHTNESS_FILE ] && brillo -S \$(cat $BRIGHTNESS_FILE)" \
-    timeout $lock_timeout "~/scripts/lock-then-sleep.sh" \
+    timeout $lock_timeout "$HOME/.config/qtile/scripts/sleep.sh" \
     resume "[ -f $BRIGHTNESS_FILE ] && brillo -S \$(cat $BRIGHTNESS_FILE)" &
 
