@@ -4,10 +4,11 @@ import subprocess
 from libqtile.lazy import lazy
 
 MENUS_PATH = "~/.config/qtile/menus"
+SCRIPTS_PATH = "~/.config/qtile/scripts"
 
 
 def autostart() -> None:
-    autostart = os.path.expanduser(f"{MENUS_PATH}/autostart.sh")
+    autostart = os.path.expanduser(f"{SCRIPTS_PATH}/autostart.sh")
     subprocess.Popen([autostart])
 
 

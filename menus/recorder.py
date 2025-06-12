@@ -90,47 +90,84 @@ def start_silent_recording():
     subprocess.Popen(["wf-recorder", "-f", output_file])
 
 
-def start_microphone_recording():
-    """Start recording with microphone audio"""
+def send_notification(title, message):
+    """Send a desktop notification using dunst"""
+    try:
+        subprocess.run(["notify-send", title, message], check=True)
+    except subprocess.CalledProcessError:
+        print(f"Failed to send notification: {title} - {message}")
+
+
+def start_mic_and_screen_recording():
+    """Start recording with the system's default/active microphone"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = f"{os.path.expanduser('~/Videos')}/recording_{timestamp}.mp4"
 
-    subprocess.Popen(
+    process = subprocess.Popen(
         [
             "wf-recorder",
-            "--audio=alsa_input.pci-0000_00_1f.3.analog-stereo",
+            "--audio",
             "-f",
             output_file,
         ]
     )
+
+    send_notification(
+        "Recording Started",
+        f"Screen recording with audio started\nFile: recording_{timestamp}.mp4",
+    )
+
+    return process, output_file
 
 
 def start_camera_microphone_recording():
-    """Start recording camera with microphone audio"""
+    """Start recording camera with the system's default/active microphone"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = f"{os.path.expanduser('~/Videos')}/camera_recording_{timestamp}.mp4"
 
-    # Using ffmpeg for camera recording with microphone (using same audio device as your aliases)
-    subprocess.Popen(
+    send_notification(
+        "Camera Recording Started",
+        f"Camera recording with audio started\nFile: camera_recording_{timestamp}.mp4",
+    )
+
+    process = subprocess.run(
         [
             "ffmpeg",
+            "-thread_queue_size",
+            "512",
             "-f",
             "v4l2",
+            "-framerate",
+            "30",  # match your camera's frame rate
             "-i",
             "/dev/video0",
+            "-thread_queue_size",
+            "1024",
             "-f",
             "pulse",
             "-i",
-            "alsa_input.pci-0000_00_1f.3.analog-stereo",
-            "-af",
-            "aresample=async=1:min_hard_comp=0.100000:first_pts=0",
+            "default",
+            "-vsync",
+            "2",  # drop or duplicate frames to maintain A/V sync
+            "-async",
+            "1",  # basic audio-video sync
             "-c:v",
             "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "23",
             "-c:a",
             "aac",
+            "-b:a",
+            "128k",
+            "-pix_fmt",
+            "yuv420p",
             output_file,
         ]
     )
+
+    return process, output_file
 
 
 def start_audio_only_recording():
@@ -138,19 +175,25 @@ def start_audio_only_recording():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_file = f"{os.path.expanduser('~/Videos')}/audio_recording_{timestamp}.mp3"
 
-    # Using ffmpeg for audio-only recording (using same audio device as your aliases)
-    subprocess.Popen(
+    process = subprocess.Popen(
         [
             "ffmpeg",
             "-f",
             "pulse",
             "-i",
-            "alsa_input.pci-0000_00_1f.3.analog-stereo",
+            "default",  # Use default pulse audio input
             "-c:a",
             "mp3",
             output_file,
         ]
     )
+
+    send_notification(
+        "Audio Recording Started",
+        f"Audio recording started\nFile: audio_recording_{timestamp}.mp3",
+    )
+
+    return process, output_file
 
 
 def stop_recording():
@@ -199,7 +242,7 @@ def screen_recorder():
     elif selected == silent_record_icon:
         start_silent_recording()
     elif selected == mic_record_icon:
-        start_microphone_recording()
+        start_mic_and_screen_recording()
     elif selected == camera_mic_record_icon:
         start_camera_microphone_recording()
     elif selected == audio_only_record_icon:

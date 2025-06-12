@@ -5,6 +5,8 @@ from libqtile.layout.max import Max
 from libqtile.layout.xmonad import MonadTall
 from libqtile.lazy import lazy
 
+world = "world"
+print(f"hello {world}")
 
 from controls.audio import (
     lower_volume,
@@ -75,6 +77,10 @@ keys = [
         lazy.window.toggle_floating(),
         desc="Toggle floating on focused window",
     ),
+    Key([mod], "Tab", lazy.group.next_window(), desc="Cycle through windows"),
+    Key([mod], "Tab", lazy.group.next_window(), desc="Cycle backwards through windows"),
+    Key([mod], "F1", lazy.window.bring_to_front(), desc="bring to front"),
+    Key([mod], "F2", lazy.window.send_to_back(), desc="send to back"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod], "space", lazy.spawn("rofi -show drun"), desc="Spawn rofi apps"),
     Key([mod], "w", lazy.spawn("rofi -show window -show-icons"), desc="Spawn rofi"),

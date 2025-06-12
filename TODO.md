@@ -5,10 +5,13 @@
 - [x] save current brightness & restore
 - [x] Bluetooth menu
 - [x] screen/audio input capture rofi menu
-- [ ] WWAN (in WiFi Menu?)
+- [x] screen key for tutorial
 - [ ] dunst notification styling
 - [ ] refactor/reorganise python code
-- [ ] rofi audio output menu / input menu
 - [ ] show recording icon
-- [ ] screen key for tutorial
 - [ ] gestures for moving between windows
+- [ ] lock and sleep on close
+
+# WAIT
+- [ ] WWAN (in WiFi Menu?)  - requires physical SIM
+- [ ] t480 power bridge doesnt work (new battery?)
