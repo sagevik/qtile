@@ -2,7 +2,7 @@ import subprocess
 import re
 from libqtile import bar, widget
 
-from .constants import Colours, FONT_TYPE
+from assets.constants import Colours, FONT_TYPE
 
 
 def get_audio_output_device():
@@ -99,7 +99,7 @@ top_bar = bar.Bar(
             background=Colours.VERY_DARK_BLUE,
         ),
         widget.Image(
-            filename="~/.config/qtile/assets/graphics/wifi.png",
+            filename="~/.config/qtile/assets/graphics/internet.png",
             background=Colours.VERY_DARK_BLUE,
             margin_y=6,
         ),
