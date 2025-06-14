@@ -5,9 +5,6 @@ from libqtile.layout.max import Max
 from libqtile.layout.xmonad import MonadTall
 from libqtile.lazy import lazy
 
-world = "world"
-print(f"hello {world}")
-
 from controls.audio import (
     lower_volume,
     raise_volume,
