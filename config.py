@@ -33,7 +33,6 @@ def on_startup():
 
 
 keys = [
-    # see: https://docs.qtile.org/en/latest/manual/config/lazy.html
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
