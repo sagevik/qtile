@@ -7,14 +7,13 @@ dunst &
 lockscreen="swaylock -i ~/Pictures/Wallpapers/austria.jpg --clock"
 
 # Timings
-dim_timeout=60                 # 1 minute of inactivity to dim
-lock_timeout=100               # 10 minutes of inactivity to lock
+dim_timeout=120  # 1 minute of inactivity to dim
+lock_timeout=300 # 5 minutes of inactivity to lock
 
-# Screen 
+# Screen
 BRIGHTNESS_FILE="/tmp/prev_brightness"
 swayidle -w \
-    timeout $dim_timeout "brillo -G > $BRIGHTNESS_FILE && brillo -S 10" \
-    resume "[ -f $BRIGHTNESS_FILE ] && brillo -S \$(cat $BRIGHTNESS_FILE)" \
-    timeout $lock_timeout "$HOME/.config/qtile/scripts/sleep.sh" \
-    resume "[ -f $BRIGHTNESS_FILE ] && brillo -S \$(cat $BRIGHTNESS_FILE)" &
-
+	timeout $dim_timeout "brillo -G > $BRIGHTNESS_FILE && brillo -S 10" \
+	resume "[ -f $BRIGHTNESS_FILE ] && brillo -S \$(cat $BRIGHTNESS_FILE)" \
+	timeout $lock_timeout "$HOME/.config/qtile/scripts/sleep.sh" \
+	resume "[ -f $BRIGHTNESS_FILE ] && brillo -S \$(cat $BRIGHTNESS_FILE)" &

@@ -23,7 +23,7 @@ def send_brightness_notification(brightness):
     elif brightness < 75:
         icon = "🔆"
     else:
-        icon = "☀️"
+        icon = "🔆"
 
     message = f"Brightness: {brightness}%"
 

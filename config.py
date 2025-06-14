@@ -5,25 +5,26 @@ from libqtile.layout.max import Max
 from libqtile.layout.xmonad import MonadTall
 from libqtile.lazy import lazy
 
-from controls.audio import (
+from assets.constants import Colours, FONT_TYPE, WALLPAPER_HONG_KONG
+from scripts.audio import (
     lower_volume,
     raise_volume,
-    toggle_mute_audio_output,
     toggle_mute_audio_input,
+    toggle_mute_audio_output,
 )
-from controls.screen import decrease_brightness, increase_brightness
-from controls.menus import (
+from scripts.menus import (
     autostart,
     bluetooth_menu,
     power_menu,
-    wifi_menu,
     recorder_menu,
+    wifi_menu,
 )
-
-from assets.constants import Colours, FONT_TYPE, WALLPAPER_HONG_KONG
+from scripts.screen import decrease_brightness, increase_brightness
 from top_bar import top_bar
+from scripts.utils import shift_group
 
 mod = "mod4"
+alt = "mod1"
 terminal = "alacritty"
 
 
@@ -33,6 +34,38 @@ def on_startup():
 
 
 keys = [
+    Key([mod, alt], "Left", lazy.screen.prev_group(), desc="Move to previous group"),
+    Key([mod, alt], "h", lazy.screen.prev_group(), desc="Move to previous group"),
+    Key([mod, alt], "Right", lazy.screen.next_group(), desc="Move to next group"),
+    Key([mod, alt], "l", lazy.screen.next_group(), desc="Move to next group"),
+    Key(
+        [alt, "shift"],
+        "h",
+        lazy.function(lambda qtile: shift_group(qtile, -1)),
+        lazy.screen.prev_group(),
+        desc="Move window to previous group",
+    ),
+    Key(
+        [alt, "shift"],
+        "Left",
+        lazy.function(lambda qtile: shift_group(qtile, -1)),
+        lazy.screen.prev_group(),
+        desc="Move window to previous group",
+    ),
+    Key(
+        [alt, "shift"],
+        "l",
+        lazy.function(lambda qtile: shift_group(qtile, 1)),
+        lazy.screen.next_group(),
+        desc="Move window to next group",
+    ),
+    Key(
+        [alt, "shift"],
+        "Right",
+        lazy.function(lambda qtile: shift_group(qtile, 1)),
+        lazy.screen.next_group(),
+        desc="Move window to next group",
+    ),
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),

@@ -1,6 +1,8 @@
 import subprocess
 import re
 
+from libqtile.lazy import lazy
+
 
 def get_audio_output_device():
     sink = subprocess.run(
@@ -26,3 +28,15 @@ def get_audio_output_device():
     pretty = port.replace("analog-output-", "").replace("-", " ").title()
 
     return pretty
+
+
+def shift_group(qtile, direction):
+    groups = qtile.groups
+    current_group = qtile.current_group
+    idx = [group.name for group in groups].index(current_group.name)
+    new_idx = (idx + direction) % len(groups)
+    qtile.current_window.togroup(groups[new_idx].name)
+    if direction == 1:
+        lazy.screen.next_group()
+    else:
+        lazy.screen.prev_group()

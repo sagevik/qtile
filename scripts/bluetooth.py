@@ -11,13 +11,14 @@ BACK_BUTTON = "Back"
 
 
 class BluetoothManager:
-    def __init__(self, rofi_args: List[str] = None):
+    def __init__(self, rofi_args: List[str] = []):
         self.rofi_args = rofi_args or []
 
     def _run_command(self, command: List[str]) -> str:
         """Run generic command and return output"""
         try:
-            return subprocess.run(command, capture_output=True, text=True, check=True)
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            return result.stdout
         except subprocess.CalledProcessError:
             return ""
 
@@ -26,8 +27,6 @@ class BluetoothManager:
         try:
             if isinstance(command, str):
                 cmd = ["bluetoothctl"] + command.split()
-            else:
-                cmd = ["bluetoothctl"] + command
             result = subprocess.run(cmd, capture_output=True, text=True, check=True)
             return result.stdout
         except subprocess.CalledProcessError:
@@ -44,7 +43,7 @@ class BluetoothManager:
             self.run_bluetoothctl("power off")
             self.show_menu()
         else:
-            rfkill_output = self._run_command(["rfkill", "list", "bluetooth"]).stdout
+            rfkill_output = self._run_command(["rfkill", "list", "bluetooth"])
             if "blocked: yes" in rfkill_output:
                 subprocess.run(["rfkill", "unblock", "bluetooth"])
                 time.sleep(3)
