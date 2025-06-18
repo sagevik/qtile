@@ -6,12 +6,7 @@ from libqtile.layout.xmonad import MonadTall
 from libqtile.lazy import lazy
 
 from assets.constants import Colours, FONT_TYPE, WALLPAPER_HONG_KONG
-from scripts.audio import (
-    lower_volume,
-    raise_volume,
-    toggle_mute_audio_input,
-    toggle_mute_audio_output,
-)
+
 from scripts.menus import (
     autostart,
     bluetooth_menu,
