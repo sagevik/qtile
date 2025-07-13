@@ -162,7 +162,7 @@ keys = [
     # Key([], "XF86AudioMicMute", toggle_mute_audio_input),
     # ScratchPad keys
     # Key([mod, "shift"], "p", lazy.group["menu"].dropdown_toggle("menu")),
-    Key([mod, "mod1"], "p", lazy.spawn("displayselect")),
+    Key([mod, alt], "p", lazy.spawn("displayselect")),
     Key([mod], "period", lazy.next_screen()),
     Key([mod], "comma", lazy.prev_screen()),
 ]
