@@ -72,8 +72,8 @@ def confirm() -> bool:
 
 
 def lock_qtile():
-    # subprocess.Popen(["slock"])
-    subprocess.Popen(["swaylock", "-i", "~/pix/wallpapers/.current.jpg", "--clock"])
+    subprocess.Popen(["slock"])
+    # subprocess.Popen(["swaylock", "-i", "~/pix/wallpapers/.current.jpg", "--clock"])
 
 
 def sleep():
