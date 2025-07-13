@@ -18,7 +18,8 @@ elif [[ "$connected" =~ "disabled" ]]; then
 	toggle="$wifi_enable  Enable Wi-Fi"
 fi
 
-selected_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: " -theme ${config_dir}/wi-fi )
+selected_network=$(echo -e "$toggle\n$wifi_list" | sort | uniq | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: " -theme ${config_dir}/wi-fi )
+# selected_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: " -theme ${config_dir}/wi-fi )
 read -r chosen_id <<< "${selected_network:3}"
 
 if [ "$selected_network" = "" ]; then

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import subprocess
 import os
+import subprocess
 from typing import List
 
 shutdown_icon = ""
@@ -72,7 +72,8 @@ def confirm() -> bool:
 
 
 def lock_qtile():
-    subprocess.Popen(["swaylock", "-i", "~/Pictures/Wallpapers/austria.jpg", "--clock"])
+    # subprocess.Popen(["slock"])
+    subprocess.Popen(["swaylock", "-i", "~/pix/wallpapers/.current.jpg", "--clock"])
 
 
 def sleep():

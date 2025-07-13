@@ -1,7 +1,10 @@
 from typing import Dict
 
-WALLPAPER_HONG_KONG = "~/.config/qtile/assets/wallpapers/hong_kong.jpg"
-FONT_TYPE = "JetBrains Mono Bold"
+WALLPAPER = "/home/rs/pix/wallpapers/.current.jpg"
+# WALLPAPER = "/home/rs/pix/wallpapers/redCity.jpg"
+FONT_TYPE = "Hack Nerd Bold"
+# FONT_TYPE = "JetBrains Mono Bold"
+FONT_SIZE = 12
 
 
 class ColourEnum:
@@ -22,11 +25,13 @@ class ColourEnum:
 
 class Colours(ColourEnum):
     GREY = "#696969"
-    GOLD = "#e2c779"
+    YELLOW = "#c4b28a"
     BLUE_GREY = "#405569"
-    ELECTRIC_BLUE = "#51d3d3"
+    ELECTRIC_BLUE = "#c4b28a"
+    # ELECTRIC_BLUE = "#51d3d3"
     DARK_BLUE = "#182838"
     VERY_DARK_BLUE = "#101c29"
-    WHITE = "#e1e1e2"
-    BLACK = "#000000"
+    WHITE = "#c5c9c5"
+    # WHITE = "#e1e1e2"
+    BLACK = "#1d1c19"
     WARNING = "#f6719b"
