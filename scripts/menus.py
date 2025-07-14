@@ -7,6 +7,7 @@ SCRIPTS_PATH = "~/.config/qtile/scripts"
 
 
 def autostart() -> None:
+    os.environ["XDG_CONFIG_HOME"] = os.path.expanduser("~/.config")
     autostart = os.path.expanduser(f"{SCRIPTS_PATH}/autostart.sh")
     subprocess.Popen([autostart])
 

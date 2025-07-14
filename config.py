@@ -1,6 +1,7 @@
 from libqtile import bar, hook, qtile, widget
-from libqtile.backend.wayland import InputConfig
-from libqtile.config import Click, Drag, DropDown, Group, Key, Match, ScratchPad, Screen
+# from libqtile.backend.wayland import InputConfig
+from libqtile.backend.wayland.inputs import InputConfig
+from libqtile.config import Click, Drag, DropDown, Group, Key, KeyChord, Match, ScratchPad, Screen
 from libqtile.layout.columns import Columns
 from libqtile.layout.floating import Floating
 from libqtile.layout.max import Max
@@ -18,7 +19,7 @@ from scripts.menus import (
     wifi_menu,
 )
 from scripts.screen import decrease_brightness, increase_brightness
-from scripts.utils import shift_group
+# from scripts.utils import shift_group
 from top_bar import top_bar, top_bar2
 
 mod = "mod4"
@@ -150,11 +151,11 @@ keys = [
     Key([mod], "b", bluetooth_menu, desc="Spawn rofi bluetooth menu"),
     Key([mod, "shift"], "b", lazy.hide_show_bar(), desc="Hide or show bar"),
     # Key([], "XF86AudioRaiseVolume", raise_volume),
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("volume up")),
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("volume up"), desc="Update volume in bar"),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("volume down"), desc="Update volume in bar"),
+    Key([], "XF86AudioMute", lazy.spawn("volume mute"), desc="Update volume in bar"),
     # Key([], "XF86AudioMute", toggle_mute_audio_output),
-    Key([], "XF86AudioMute", lazy.spawn("volume mute")),
     # Key([], "XF86AudioLowerVolume", lower_volume),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("volume down")),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightness down")),
     # Key([], "XF86MonBrightnessDown", decrease_brightness),
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightness up")),
@@ -165,6 +166,12 @@ keys = [
     Key([mod, alt], "p", lazy.spawn("displayselect")),
     Key([mod], "period", lazy.next_screen()),
     Key([mod], "comma", lazy.prev_screen()),
+    # Application chords
+    KeyChord([mod], "o", [
+        Key([], "b", lazy.spawn("brave")),
+        Key([], "q", lazy.spawn("qalculate-gtk")),
+        Key([], "v", lazy.spawn("pavucontrol")),
+    ]),
 ]
 
 # Add key bindings to switch VTs in Wayland.
