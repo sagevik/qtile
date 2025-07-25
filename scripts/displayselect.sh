@@ -58,13 +58,14 @@ onescreen() { # If only one output available or chosen.
 	xrandr --output "$1" --auto --scale 1.0x1.0 $(echo "$allposs" | grep -v "\b$1" | awk '{print "--output", $1, "--off"}' | paste -sd ' ' -)
 	}
 
+restart() {
+        qtile cmd-obj -o cmd -f restart
+}
+
 postrun() { # Stuff to run to clean up.
 	wallpaper --reload # Fix background if screen size/arangement has changed.
 	{ killall dunst ; setsid -f dunst ;} >/dev/null 2>&1 # Restart dunst to ensure proper location on screen
-}
-
-restart() {
-        qtile cmd-obj -o cmd -f restart
+        restart
 }
 
 # Get all possible displays
@@ -92,4 +93,3 @@ if [ -z "$chosen" ]; then
 fi
 
 postrun
-restart
