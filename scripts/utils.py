@@ -1,6 +1,7 @@
 import subprocess
 import re
 
+from libqtile import qtile
 from libqtile.lazy import lazy
 
 
@@ -40,3 +41,33 @@ def shift_group(qtile, direction):
         lazy.screen.next_group()
     else:
         lazy.screen.prev_group()
+
+
+def floating_to_front(qtile):
+    w = qtile.current_window
+    if w.floating:
+        w.bring_to_front()
+
+
+def blueman_manager():
+    return {"Button1": lambda: qtile.cmd_spawn("blueman-manager")}
+
+
+def select_wifi(config_dir):
+    return {"Button1": lambda: qtile.cmd_spawn(f"{config_dir}/qtile/scripts/wifi.sh")}
+
+
+def get_package_updates():
+    try:
+        with open("/tmp/packageUpdates", "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return "X"
+
+
+def run_updates(qtile):
+    updates = get_package_updates()
+    if updates == "0":
+        qtile.cmd_spawn(subprocess.run(["notify-send", "Archupdate", "No updates"]))
+    else:
+        qtile.cmd_spawn("ghostty -e archupdate")
