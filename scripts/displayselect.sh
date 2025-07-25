@@ -64,7 +64,7 @@ postrun() { # Stuff to run to clean up.
 }
 
 restart() {
-        qtile cmd-obj -o -f restart
+        qtile cmd-obj -o cmd -f restart
 }
 
 # Get all possible displays
