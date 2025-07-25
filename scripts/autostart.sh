@@ -3,9 +3,10 @@
 # Start dunst notification daemon
 xmodmap $HOME/.Xmodmap &
 dunst &
-blueman-applet &
-nm-applet &
 archupdate -b &
+
+# Polkit
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # Lock screen command
 lockscreen="slock"
