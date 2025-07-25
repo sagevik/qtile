@@ -1,7 +1,18 @@
 from libqtile import bar, hook, qtile, widget
+
 # from libqtile.backend.wayland import InputConfig
 from libqtile.backend.wayland.inputs import InputConfig
-from libqtile.config import Click, Drag, DropDown, Group, Key, KeyChord, Match, ScratchPad, Screen
+from libqtile.config import (
+    Click,
+    Drag,
+    DropDown,
+    Group,
+    Key,
+    KeyChord,
+    Match,
+    ScratchPad,
+    Screen,
+)
 from libqtile.layout.columns import Columns
 from libqtile.layout.floating import Floating
 from libqtile.layout.max import Max
@@ -14,12 +25,13 @@ from assets.constants import FONT_TYPE, WALLPAPER, Colours
 from scripts.menus import (
     autostart,
     bluetooth_menu,
+    displayselect,
     power_menu,
     recorder_menu,
     wifi_menu,
 )
 from scripts.screen import decrease_brightness, increase_brightness
-# from scripts.utils import shift_group
+from scripts.utils import shift_group, floating_to_front
 from top_bar import top_bar, top_bar2
 
 mod = "mod4"
@@ -37,11 +49,17 @@ keys = [
     # Key([mod, alt], "h", lazy.screen.prev_group(), desc="Move to previous group"),
     # Key([mod, alt], "Right", lazy.screen.next_group(), desc="Move to next group"),
     # Key([mod, alt], "l", lazy.screen.next_group(), desc="Move to next group"),
+    Key(
+        [mod, "shift"],
+        "comma",
+        lazy.function(lambda qtile: shift_group(qtile, -1)),
+        desc="Move window to previous group",
+    ),
     # Key(
-    #     [alt, "shift"],
-    #     "h",
+    #     [mod, "shift"],
+    #     "comma",
     #     lazy.function(lambda qtile: shift_group(qtile, -1)),
-    #     lazy.screen.prev_group(),
+    #     # lazy.screen.prev_group(),
     #     desc="Move window to previous group",
     # ),
     # Key(
@@ -51,11 +69,17 @@ keys = [
     #     lazy.screen.prev_group(),
     #     desc="Move window to previous group",
     # ),
+    Key(
+        [mod, "shift"],
+        "period",
+        lazy.function(lambda qtile: shift_group(qtile, 1)),
+        desc="Move window to next group",
+    ),
     # Key(
-    #     [alt, "shift"],
-    #     "l",
+    #     [mod, "shift"],
+    #     "period",
     #     lazy.function(lambda qtile: shift_group(qtile, 1)),
-    #     lazy.screen.next_group(),
+    #     # lazy.screen.next_group(),
     #     desc="Move window to next group",
     # ),
     # Key(
@@ -67,10 +91,19 @@ keys = [
     # ),
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
-    Key([mod], "j", lazy.layout.next(), desc="Move focus next"),
-    # Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
-    Key([mod], "k", lazy.layout.previous(), desc="Move focus previous"),
-    # Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
+    Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
+    Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
+    Key(
+        [alt],
+        "tab",
+        lazy.function(lambda qtile: floating_to_front(qtile)),
+        desc="Move focus next",
+    ),
+    # Key([], "tab", lazy.function(floating_to_front), desc="Move focus next"),
+    # Key([alt], "tab", lazy.group.next_window(), desc="Move focus next"),
+    # Key([alt, "shift"], "tab", lazy.group.prev_window(), desc="Move focus previous"),
+    # Key([mod], "j", lazy.layout.next(), desc="Move focus next"),
+    # Key([mod], "k", lazy.layout.previous(), desc="Move focus previous"),
     Key(
         [mod, "shift"],
         "Return",
@@ -151,9 +184,10 @@ keys = [
     Key([mod], "b", bluetooth_menu, desc="Spawn rofi bluetooth menu"),
     Key([mod, "shift"], "b", lazy.hide_show_bar(), desc="Hide or show bar"),
     # Key([], "XF86AudioRaiseVolume", raise_volume),
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("volume up"), desc="Update volume in bar"),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("volume down"), desc="Update volume in bar"),
-    Key([], "XF86AudioMute", lazy.spawn("volume mute"), desc="Update volume in bar"),
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("volume up"), desc="Raise volume"),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("volume down"), desc="Lower volume"),
+    Key([], "XF86AudioMute", lazy.spawn("volume mute"), desc="Mute volume"),
+    Key([mod], "XF86AudioMute", lazy.spawn("volume setvolume"), desc="Set volume"),
     # Key([], "XF86AudioMute", toggle_mute_audio_output),
     # Key([], "XF86AudioLowerVolume", lower_volume),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightness down")),
@@ -161,17 +195,23 @@ keys = [
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightness up")),
     # Key([], "XF86MonBrightnessUp", increase_brightness),
     # Key([], "XF86AudioMicMute", toggle_mute_audio_input),
+    Key([], "Print", lazy.spawn("scrshot")),
     # ScratchPad keys
     # Key([mod, "shift"], "p", lazy.group["menu"].dropdown_toggle("menu")),
-    Key([mod, alt], "p", lazy.spawn("displayselect")),
+    Key([mod, alt], "p", displayselect),
+    # Key([mod, alt], "p", lazy.spawn("displayselect_rofi")),
     Key([mod], "period", lazy.next_screen()),
     Key([mod], "comma", lazy.prev_screen()),
     # Application chords
-    KeyChord([mod], "o", [
-        Key([], "b", lazy.spawn("brave")),
-        Key([], "q", lazy.spawn("qalculate-gtk")),
-        Key([], "v", lazy.spawn("pavucontrol")),
-    ]),
+    KeyChord(
+        [mod],
+        "o",
+        [
+            Key([], "b", lazy.spawn("brave")),
+            Key([], "q", lazy.spawn("qalculate-gtk")),
+            Key([], "v", lazy.spawn("pavucontrol")),
+        ],
+    ),
 ]
 
 # Add key bindings to switch VTs in Wayland.
@@ -188,7 +228,37 @@ for vt in range(1, 8):
     )
 
 
-groups = [Group(i) for i in "123456789"]
+# groups = [Group(i) for i in "1234567890"]
+
+# Create labels for groups and assign them a default layout.
+groups = []
+
+group_names = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+
+group_labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Ø"]
+
+group_layouts = [
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+    "columns",
+]
+
+# Add group names, labels, and default layouts to the groups object.
+for i in range(len(group_names)):
+    groups.append(
+        Group(
+            name=group_names[i],
+            layout=group_layouts[i].lower(),
+            label=group_labels[i],
+        )
+    )
 
 for i in groups:
     keys.extend(
@@ -213,7 +283,7 @@ for i in groups:
                 [mod, "control"],
                 i.name,
                 lazy.window.togroup(i.name),
-                desc="move focused window to group {}".format(i.name),
+                desc="Move focused window to group {}".format(i.name),
             ),
             Key(
                 [mod, "shift"],
@@ -244,7 +314,7 @@ groups.append(
         "scratchpad",
         [
             DropDown(
-                "bitwarden", "bitwarden-desktop", x=0.2, y=0.1, height=0.8, width=0.6
+                "bitwarden", "bitwarden-desktop", x=0.3, y=0.1, height=0.6, width=0.4
             ),
             DropDown(
                 "term", terminal, x=0.2, y=0.2, opacity=0.8, height=0.4, width=0.6
@@ -252,7 +322,7 @@ groups.append(
             DropDown(
                 "menu",
                 "st -e pow --fzf",
-                x=0.4,
+                x=0.5,
                 y=0.4,
                 opacity=0.8,
                 height=0.15,
@@ -262,7 +332,7 @@ groups.append(
             DropDown(
                 "launcher",
                 "st -e launcher",
-                x=0.2,
+                x=0.35,
                 y=0.2,
                 opacity=0.8,
                 height=0.6,
@@ -274,10 +344,10 @@ groups.append(
 )
 
 config = {
-    "margin": 2,
-    "single_margin": 2,
-    "border_focus": Colours.ELECTRIC_BLUE,
-    "border_normal": Colours.GREY,
+    "margin": 1,
+    "single_margin": 1,
+    "border_focus": Colours.AQUA,
+    "border_normal": Colours.BLACK,
 }
 
 layouts = [
@@ -339,12 +409,12 @@ mouse = [
 dgroups_key_binder = None
 dgroups_app_rules = []
 follow_mouse_focus = True
-bring_front_click = False
+bring_front_click = True
 floats_kept_above = True
 cursor_warp = False
 floating_layout = Floating(
     border_width=2,
-    border_focus=Colours.ELECTRIC_BLUE,
+    border_focus=Colours.AQUA,
     border_normal=Colours.DARK_BLUE,
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
@@ -368,9 +438,11 @@ auto_minimize = True
 # When using the Wayland backend, this can be used to configure input devices.
 wl_input_rules = {
     "*": InputConfig(left_handed=False, pointer_accel=False),
-    "type:keyboard": InputConfig(kb_layout="no", kb_options="caps:escape"),
+    "type:keyboard": InputConfig(
+        kb_layout="no", kb_options="caps:escape", kb_repeat_rate=25, kb_repeat_delay=600
+    ),
     "type:pointer": InputConfig(tap=True),
-    "type:touchpad": InputConfig(tap=True),
+    "type:touchpad": InputConfig(tap=True, natural_scroll=True),
 }
 # xcursor theme (string or None) and size (integer) for Wayland backend
 wl_xcursor_theme = None
@@ -384,4 +456,4 @@ wl_xcursor_size = 24
 #
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
-wmname = "LG3D"
+wmname = "Qtile"
