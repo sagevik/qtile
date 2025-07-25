@@ -34,3 +34,9 @@ def bluetooth_menu(_qtile) -> None:
 def recorder_menu(_qtile) -> None:
     bluetooth_menu = os.path.expanduser(f"{SCRIPTS_PATH}/recorder.py")
     subprocess.Popen([bluetooth_menu])
+
+
+@lazy.function
+def displayselect(_qtile) -> None:
+    bluetooth_menu = os.path.expanduser(f"{SCRIPTS_PATH}/displayselect.sh")
+    subprocess.Popen([bluetooth_menu])
